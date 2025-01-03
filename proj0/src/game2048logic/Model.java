@@ -15,6 +15,8 @@ public class Model {
     private final Board board;
     /** Current score. */
     private int score;
+    /** Current max Tile */
+    private int maxTile;
 
     /* Coordinate System: column x, row y of the board (where x = 0,
      * y = 0 is the lower-left corner of the board) will correspond
@@ -29,6 +31,7 @@ public class Model {
     public Model(int size) {
         board = new Board(size);
         score = 0;
+        maxTile = 0;
     }
 
     /** A new 2048 game where RAWVALUES contain the values of the tiles
@@ -85,6 +88,13 @@ public class Model {
      * */
     public boolean emptySpaceExists() {
         // TODO: Task 2. Fill in this function.
+        for (int x = 0; x < this.size(); x++) {
+            for (int y = 0; y < this.size(); y++) {
+                if (tile(x, y) == null) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -95,6 +105,16 @@ public class Model {
      */
     public boolean maxTileExists() {
         // TODO: Task 3. Fill in this function.
+        for (int x = 0; x < this.size(); x++) {
+            for (int y = 0; y < this.size(); y++) {
+                if (tile(x, y) != null) {
+                    maxTile = Math.max(maxTile, tile(x, y).value());
+                }
+            }
+        }
+        if (maxTile == MAX_PIECE) {
+            return true;
+        }
         return false;
     }
 
@@ -106,6 +126,18 @@ public class Model {
      */
     public boolean atLeastOneMoveExists() {
         // TODO: Fill in this function.
+        if (emptySpaceExists()) {
+            return true;
+        } // can be optimized
+        for (int x = 0; x < this.size(); x++) {
+            for (int y = 0; y < this.size(); y++) {
+                int val = tile(x, y).value();
+                if (x + 1 < this.size() && tile(x + 1, y).value() == val) return true;
+                if (y + 1 < this.size() && tile(x, y + 1).value() == val) return true;
+                if (x - 1 >= 0 && tile(x - 1, y).value() == val) return true;
+                if (y - 1 >= 0 && tile(x, y - 1).value() == val) return true;
+            }
+        }
         return false;
     }
 
