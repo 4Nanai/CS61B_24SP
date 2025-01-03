@@ -159,8 +159,24 @@ public class Model {
         Tile currTile = board.tile(x, y);
         int myValue = currTile.value();
         int targetY = y;
-
         // TODO: Tasks 5, 6, and 10. Fill in this function.
+        int traverseY = y + 1;
+        while (traverseY < this.size()) {
+            if (tile(x, traverseY) != null) {
+                Tile t = tile(x, traverseY);
+                if (t.value() == myValue && !t.wasMerged()) {
+                    targetY = traverseY;
+                    this.score += 2 * myValue;
+                }
+                else targetY = traverseY - 1;
+                break;
+            }
+            traverseY++;
+        }
+        if (traverseY == this.size()) {
+            targetY = traverseY - 1;
+        }
+        if (targetY != y) this.board.move(x, targetY, currTile);
     }
 
     /** Handles the movements of the tilt in column x of the board
@@ -170,10 +186,34 @@ public class Model {
      * */
     public void tiltColumn(int x) {
         // TODO: Task 7. Fill in this function.
+        for (int y = this.size() - 2; y >= 0; y--) {
+            if (tile(x, y) != null) {
+                moveTileUpAsFarAsPossible(x, y);
+            }
+        }
     }
 
     public void tilt(Side side) {
         // TODO: Tasks 8 and 9. Fill in this function.
+        switch (side) {
+            case NORTH:
+                break;
+            case SOUTH:
+                board.setViewingPerspective(Side.SOUTH);
+                break;
+            case WEST:
+                board.setViewingPerspective(Side.WEST);
+                break;
+            case EAST:
+                board.setViewingPerspective(Side.EAST);
+                break;
+            default:
+                break;
+        }
+        for (int x = 0; x < this.size(); x++) {
+            tiltColumn(x);
+        }
+        board.setViewingPerspective(Side.NORTH);
     }
 
     /** Tilts every column of the board toward SIDE.
