@@ -13,6 +13,18 @@ public class MaxArrayDeque61BTest {
         }
     }
 
+    public static class StringFirstLetterComparator implements Comparator<String> {
+        public int compare(String a, String b) {
+            if (a == "") {
+                return -1;
+            }
+            if (b == "") {
+                return 1;
+            }
+            return a.charAt(0) - b.charAt(0);
+        }
+    }
+
     @Test
     public void basicTest() {
         MaxArrayDeque61B<String> mad = new MaxArrayDeque61B<>(new StringLengthComparator());
@@ -20,5 +32,7 @@ public class MaxArrayDeque61BTest {
         mad.addFirst("2");
         mad.addFirst("fury road");
         assertThat(mad.max()).isEqualTo("fury road");
+        assertThat(mad.max(new StringFirstLetterComparator())).isEqualTo("fury road");
+
     }
 }
