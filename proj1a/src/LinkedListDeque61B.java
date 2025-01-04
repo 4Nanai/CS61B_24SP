@@ -61,22 +61,16 @@ public class LinkedListDeque61B<T> implements Deque61B<T> {
             return returnList;
         }
         Node cur = _head;
-        returnList.add(cur.val);
-        cur = cur.next;
-        while (cur != _head) {
+        do {
             returnList.add(cur.val);
             cur = cur.next;
-        }
+        } while (cur != _head);
         return returnList;
     }
 
     @Override
     public boolean isEmpty() {
-        if (_head == null) {
-            return true;
-        } else {
-            return false;
-        }
+        return _head == null;
     }
 
     @Override
