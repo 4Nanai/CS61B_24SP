@@ -63,9 +63,14 @@ public class UnionFindTest {
         assertThat(uf.find(5)).isEqualTo(9);
         assertThat(uf.find(7)).isEqualTo(9);
         assertThat(uf.find(8)).isEqualTo(9);
+        assertThat(uf.connected(5, 9)).isTrue();
+        assertThat(uf.connected(2, 9)).isFalse();
+        assertThat(uf.parent(9)).isEqualTo(-6);
+        assertThat(uf.sizeOf(5)).isEqualTo(6);
 
         uf.union(9, 2);
         assertThat(uf.find(3)).isEqualTo(9);
+        assertThat(uf.sizeOf(0)).isEqualTo(10);
     }
 
     /**
