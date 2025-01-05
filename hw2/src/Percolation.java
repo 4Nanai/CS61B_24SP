@@ -1,6 +1,6 @@
 public class Percolation {
     // TODO: Add any necessary instance variables.
-    private int[] grid;
+    private final int[] grid;
     private int openSite;
     private static int size;
 
@@ -52,10 +52,7 @@ public class Percolation {
             return false;
         }
         int siteState = find(row, col);
-        if (siteState < size && siteState >= 0) {
-            return true;
-        }
-        return false;
+        return siteState < size && siteState >= 0;
     }
 
     public int numberOfOpenSites() {
