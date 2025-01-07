@@ -79,8 +79,14 @@ public class TestBSTMap {
     public void sanityPutTest() {
         BSTMap<String, Integer> b = new BSTMap<>();
         b.put("hi", 1);
+        b.put("kiss", 2);
+        b.put("starChild", 3);
+        b.put("Apple", 4);
+        b.put("Banana", 5);
         assertThat(b.containsKey("hi")).isTrue();
         assertThat(b.get("hi")).isEqualTo(1);
+        assertThat(b.containsKey("Kiss")).isFalse();
+        assertThat(b.get("Apple")).isEqualTo(4);
     }
 
     // Assumes `put` is implemented properly. This test is a bit tricky - remember that
