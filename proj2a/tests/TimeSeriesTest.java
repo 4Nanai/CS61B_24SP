@@ -40,6 +40,23 @@ public class TimeSeriesTest {
         for (int i = 0; i < expectedTotal.size(); i += 1) {
             assertThat(totalPopulation.data().get(i)).isWithin(1E-10).of(expectedTotal.get(i));
         }
+
+        TimeSeries newCatPopulation = new TimeSeries(catPopulation, 1992, 1995);
+        assertThat(newCatPopulation.years()).containsExactly(1992, 1994);
+        assertThat(newCatPopulation.data()).containsExactly(100.0, 200.0);
+
+        newCatPopulation.put(1995, 200.0);
+
+        TimeSeries divPopulation = dogPopulation.dividedBy(newCatPopulation);
+
+        assertThat(divPopulation.years()).containsExactly(1994, 1995);
+        assertThat(divPopulation.data()).containsExactly(2.0, 2.5);
+
+        try {
+            newCatPopulation.dividedBy(dogPopulation);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Test
