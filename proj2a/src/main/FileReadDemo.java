@@ -16,6 +16,9 @@ public class FileReadDemo {
             System.out.println(nextLine);
             System.out.print("After splitting on tab characters, the first word is: ");
             String[] splitLine = nextLine.split("\t");
+            if (splitLine.length != 4) {
+                throw new IllegalArgumentException("Wrong number of tab characters");
+            }
             System.out.println(splitLine[0]);
         }
     }

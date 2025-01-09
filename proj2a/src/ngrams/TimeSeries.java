@@ -25,6 +25,11 @@ public class TimeSeries extends TreeMap<Integer, Double> {
         super();
     }
 
+    public TimeSeries(int year, double count) {
+        super();
+        put(year, count);
+    }
+
     /**
      * Creates a copy of TS, but only between STARTYEAR and ENDYEAR,
      * inclusive of both end points.
@@ -44,7 +49,7 @@ public class TimeSeries extends TreeMap<Integer, Double> {
      */
     public List<Integer> years() {
         // TODO: Fill in this method.
-        List<Integer> years = new ArrayList<Integer>();
+        List<Integer> years = new ArrayList<>();
         for (int year: keySet()) {
             years.add(year);
         }

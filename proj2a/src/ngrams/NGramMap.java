@@ -1,5 +1,7 @@
 package ngrams;
 
+import edu.princeton.cs.algs4.In;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,12 +20,40 @@ public class NGramMap {
 
     // TODO: Add any necessary static/instance variables.
     Map<String, TimeSeries> wordMap;
+    TimeSeries countTS;
     /**
      * Constructs an NGramMap from WORDSFILENAME and COUNTSFILENAME.
      */
     public NGramMap(String wordsFilename, String countsFilename) {
         // TODO: Fill in this constructor. See the "NGramMap Tips" section of the spec for help.
         wordMap = new HashMap<>();
+        countTS = new TimeSeries();
+        In wordsFile = new In(wordsFilename);
+        while (wordsFile.hasNextLine()) {
+            String nextLine = wordsFile.readLine();
+            String[] tokens = nextLine.split("\t");
+            if (tokens.length != 4) {
+                throw new IllegalArgumentException("Invalid N-gram wordsFile format");
+            }
+            String word = tokens[0];
+            int year = Integer.parseInt(tokens[1]);
+            double count = Double.parseDouble(tokens[2]);
+            if (!wordMap.containsKey(word)) {
+                wordMap.put(word, new TimeSeries(year, count));
+            }
+            wordMap.get(word).put(year, count);
+        }
+        In countsFile = new In(countsFilename);
+        while (countsFile.hasNextLine()) {
+            String nextLine = countsFile.readLine();
+            String[] tokens = nextLine.split(",");
+            int year = Integer.parseInt(tokens[0]);
+            double count = Double.parseDouble(tokens[1]);
+            if (tokens.length != 4) {
+                throw new IllegalArgumentException("Invalid N-gram countsFile format");
+            }
+            countTS.put(year, count);
+        }
     }
 
     /**
@@ -38,8 +68,7 @@ public class NGramMap {
         if (!wordMap.containsKey(word)) {
             return new TimeSeries();
         }
-        TimeSeries returnTS = new TimeSeries(wordMap.get(word), startYear, endYear);
-        return returnTS;
+        return new TimeSeries(wordMap.get(word), startYear, endYear);
     }
 
     /**
@@ -53,8 +82,7 @@ public class NGramMap {
         if (!wordMap.containsKey(word)) {
             return new TimeSeries();
         }
-        TimeSeries returnTS = new TimeSeries(wordMap.get(word), TimeSeries.MIN_YEAR, TimeSeries.MAX_YEAR);
-        return returnTS;
+        return new TimeSeries(wordMap.get(word), TimeSeries.MIN_YEAR, TimeSeries.MAX_YEAR);
     }
 
     /**
@@ -63,8 +91,8 @@ public class NGramMap {
     public TimeSeries totalCountHistory() {
         // TODO: Fill in this method.
         TimeSeries returnTS = new TimeSeries();
-        for (TimeSeries ts : wordMap.values()) {
-            returnTS = returnTS.plus(ts);
+        for (int year : countTS.years()) {
+            returnTS.put(year, countTS.get(year));
         }
         return returnTS;
     }
@@ -80,8 +108,7 @@ public class NGramMap {
             return new TimeSeries();
         }
         TimeSeries wordTS = new TimeSeries(wordMap.get(word), startYear, endYear);
-        TimeSeries returnTS = wordTS.dividedBy(totalCountHistory());
-        return returnTS;
+        return wordTS.dividedBy(totalCountHistory());
     }
 
     /**
@@ -94,8 +121,7 @@ public class NGramMap {
         if (!wordMap.containsKey(word)) {
             return new TimeSeries();
         }
-        TimeSeries returnTS = wordMap.get(word).dividedBy(totalCountHistory());
-        return returnTS;
+        return wordMap.get(word).dividedBy(totalCountHistory());
     }
 
     /**
