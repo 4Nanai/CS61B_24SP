@@ -49,11 +49,7 @@ public class TimeSeries extends TreeMap<Integer, Double> {
      */
     public List<Integer> years() {
         // TODO: Fill in this method.
-        List<Integer> years = new ArrayList<>();
-        for (int year: keySet()) {
-            years.add(year);
-        }
-        return years;
+        return new ArrayList<>(this.keySet());
     }
 
     /**
@@ -62,11 +58,7 @@ public class TimeSeries extends TreeMap<Integer, Double> {
      */
     public List<Double> data() {
         // TODO: Fill in this method.
-        List<Double> dataList = new ArrayList<>();
-        for (int year: keySet()) {
-            dataList.add(get(year));
-        }
-        return dataList;
+        return new ArrayList<>(values());
     }
 
     /**
