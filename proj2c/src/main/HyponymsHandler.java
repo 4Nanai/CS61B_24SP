@@ -13,9 +13,9 @@ public class HyponymsHandler extends NgordnetQueryHandler {
 
     private final WordNet wordNet;
 
-    public HyponymsHandler() {
+    public HyponymsHandler(WordNet wordNet) {
         super();
-        wordNet = new WordNet("data/wordnet/synsets.txt", "data/wordnet/hyponyms.txt");
+        this.wordNet = wordNet;
     }
 
     @Override
@@ -25,6 +25,14 @@ public class HyponymsHandler extends NgordnetQueryHandler {
             return "No words provided.";
         }
         StringBuilder result = new StringBuilder();
+        Set<String> hyponymsSet = getStringSet(words);
+        ArrayList<String> hyponyms = new ArrayList<>(hyponymsSet);
+        hyponyms.sort(String::compareTo);
+        result.append(hyponyms);
+        return result.toString();
+    }
+
+    protected Set<String> getStringSet(List<String> words) {
         Set<String> hyponymsSet = null;
         for (String word : words) {
             Set<String> wordSet = wordNet.getWordSet(word);
@@ -40,9 +48,6 @@ public class HyponymsHandler extends NgordnetQueryHandler {
             }
             hyponymsSet = newSet;
         }
-        ArrayList<String> hyponyms = new ArrayList<>(hyponymsSet);
-        hyponyms.sort(String::compareTo);
-        result.append(hyponyms);
-        return result.toString();
+        return hyponymsSet;
     }
 }
