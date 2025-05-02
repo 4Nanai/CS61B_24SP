@@ -5,9 +5,9 @@ import edu.princeton.cs.algs4.In;
 import java.util.*;
 
 public class WordNet {
-    private final Map<String, List<Integer>> wordToIndex;
-    private final Map<Integer, WordNode> indexToNode;
-    private final Map<Integer, LinkedList<Integer>> edges;
+    protected final Map<String, List<Integer>> wordToIndex;
+    protected final Map<Integer, WordNode> indexToNode;
+    protected final Map<Integer, LinkedList<Integer>> edges;
 
     public WordNet(String synFileName, String hypFileName) {
         wordToIndex = new HashMap<>();
@@ -43,15 +43,37 @@ public class WordNet {
         }
     }
 
-    public Map<String, List<Integer>> getWordToIndex() {
-        return wordToIndex;
-    }
-
-    public Map<Integer, WordNode> getIndexToNode() {
-        return indexToNode;
-    }
-
-    public Map<Integer, LinkedList<Integer>> getEdges() {
-        return edges;
+    // Simple dfs to find all words that are connected to the given word
+    public Set<String> getWordSet(String word) {
+        Set<String> wordSet = new HashSet<>();
+        List<Integer> indices = this.wordToIndex.get(word);
+        if (indices == null) {
+            return wordSet;
+        }
+        Stack<Integer> stk = new Stack<>();
+        Set<Integer> visited = new HashSet<>();
+        for (Integer index : indices) {
+            stk.push(index);
+            visited.add(index);
+        }
+        while (!stk.isEmpty()) {
+            Integer index = stk.pop();
+            WordNode node = this.indexToNode.get(index);
+            if (node == null) {
+                continue;
+            }
+            wordSet.addAll(node.getWords());
+            LinkedList<Integer> list = this.edges.get(index);
+            if (list != null) {
+                for (Integer childIndex : list) {
+                    if (visited.contains(childIndex)) {
+                        continue;
+                    }
+                    stk.push(childIndex);
+                    visited.add(childIndex);
+                }
+            }
+        }
+        return wordSet;
     }
 }
