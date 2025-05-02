@@ -27,7 +27,7 @@ public class HyponymsKHandler extends HyponymsHandler {
         List<String> words = q.words();
         int startYear = q.startYear();
         int endYear = q.endYear();
-        Set<String> stringSet = this.getStringSet(words);
+        Set<String> stringSet = this.getStringSet(words, q.ngordnetQueryType());
         List<String> stringList = stringSet
                 .stream()
                 .sorted(

@@ -2,6 +2,7 @@ package main;
 
 import browser.NgordnetQuery;
 import browser.NgordnetQueryHandler;
+import browser.NgordnetQueryType;
 import wordnet.WordNet;
 
 import java.util.ArrayList;
@@ -25,17 +26,17 @@ public class HyponymsHandler extends NgordnetQueryHandler {
             return "No words provided.";
         }
         StringBuilder result = new StringBuilder();
-        Set<String> hyponymsSet = getStringSet(words);
+        Set<String> hyponymsSet = getStringSet(words, q.ngordnetQueryType());
         ArrayList<String> hyponyms = new ArrayList<>(hyponymsSet);
         hyponyms.sort(String::compareTo);
         result.append(hyponyms);
         return result.toString();
     }
 
-    protected Set<String> getStringSet(List<String> words) {
+    protected Set<String> getStringSet(List<String> words, NgordnetQueryType type) {
         Set<String> hyponymsSet = null;
         for (String word : words) {
-            Set<String> wordSet = wordNet.getWordSet(word);
+            Set<String> wordSet = wordNet.getWordSet(word, type);
             if (hyponymsSet == null) {
                 hyponymsSet = wordSet;
                 continue;

@@ -1,5 +1,6 @@
 package wordnet;
 
+import browser.NgordnetQueryType;
 import edu.princeton.cs.algs4.In;
 
 import java.util.*;
@@ -7,12 +8,14 @@ import java.util.*;
 public class WordNet {
     protected final Map<String, List<Integer>> wordToIndex;
     protected final Map<Integer, WordNode> indexToNode;
-    protected final Map<Integer, LinkedList<Integer>> edges;
+    protected final Map<Integer, LinkedList<Integer>> children;
+    protected final Map<Integer, LinkedList<Integer>> parents;
 
     public WordNet(String synFileName, String hypFileName) {
         wordToIndex = new HashMap<>();
         indexToNode = new HashMap<>();
-        edges = new HashMap<>();
+        children = new HashMap<>();
+        parents = new HashMap<>();
         In synFile = new In(synFileName);
         while (synFile.hasNextLine()) {
             String line = synFile.readLine();
@@ -36,15 +39,17 @@ public class WordNet {
                 continue;
             }
             int index = Integer.parseInt(tokens[0]);
-            LinkedList<Integer> list = edges.computeIfAbsent(index, k -> new LinkedList<>());
+            LinkedList<Integer> list = children.computeIfAbsent(index, k -> new LinkedList<>());
             for (int i = 1; i < tokens.length; i++) {
-                list.add(Integer.parseInt(tokens[i]));
+                int vertices = Integer.parseInt(tokens[i]);
+                parents.computeIfAbsent(vertices, k -> new LinkedList<>()).add(index);
+                list.add(vertices);
             }
         }
     }
 
     // Simple dfs to find all words that are connected to the given word
-    public Set<String> getWordSet(String word) {
+    public Set<String> getWordSet(String word, NgordnetQueryType type) {
         Set<String> wordSet = new HashSet<>();
         List<Integer> indices = this.wordToIndex.get(word);
         if (indices == null) {
@@ -63,7 +68,12 @@ public class WordNet {
                 continue;
             }
             wordSet.addAll(node.getWords());
-            LinkedList<Integer> list = this.edges.get(index);
+            LinkedList<Integer> list = null;
+            if (type.equals(NgordnetQueryType.HYPONYMS)) {
+                list = this.children.get(index);
+            } else {
+                list = this.parents.get(index);
+            }
             if (list != null) {
                 for (Integer childIndex : list) {
                     if (visited.contains(childIndex)) {
