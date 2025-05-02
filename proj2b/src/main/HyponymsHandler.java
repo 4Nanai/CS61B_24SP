@@ -5,6 +5,7 @@ import browser.NgordnetQueryHandler;
 import wordnet.WordNet;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -24,15 +25,24 @@ public class HyponymsHandler extends NgordnetQueryHandler {
             return "No words provided.";
         }
         StringBuilder result = new StringBuilder();
-        String word = words.get(0);
-        Set<String> hyponymsSet = wordNet.getWordSet(word);
+        Set<String> hyponymsSet = null;
+        for (String word : words) {
+            Set<String> wordSet = wordNet.getWordSet(word);
+            if (hyponymsSet == null) {
+                hyponymsSet = wordSet;
+                continue;
+            }
+            Set<String> newSet = new HashSet<>();
+            for (String w : wordSet) {
+                if (hyponymsSet.contains(w)) {
+                    newSet.add(w);
+                }
+            }
+            hyponymsSet = newSet;
+        }
         ArrayList<String> hyponyms = new ArrayList<>(hyponymsSet);
         hyponyms.sort(String::compareTo);
-        if (hyponyms.isEmpty()) {
-            result.append("No hyponyms found for ").append(word).append(".\n");
-        } else {
-            result.append("Hyponyms of ").append(word).append(": ").append(hyponyms).append("\n");
-        }
+        result.append(hyponyms);
         return result.toString();
     }
 }
