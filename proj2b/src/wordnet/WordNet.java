@@ -17,11 +17,11 @@ public class WordNet {
         while (synFile.hasNextLine()) {
             String line = synFile.readLine();
             String[] tokens = line.split(",");
-            if (tokens.length != 3) {
+            if (tokens.length < 3) {
                 throw new IllegalArgumentException("Invalid synset line: " + line);
             }
             int index = Integer.parseInt(tokens[0]);
-            String definition = tokens[2];
+            String definition = String.join(",", Arrays.copyOfRange(tokens, 2, tokens.length));
             ArrayList<String> words = new ArrayList<>(Arrays.asList(tokens[1].split(" ")));
             words.forEach(word -> {
                 wordToIndex.computeIfAbsent(word, k -> new ArrayList<>()).add(index);

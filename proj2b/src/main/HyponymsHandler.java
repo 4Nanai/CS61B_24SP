@@ -15,7 +15,7 @@ public class HyponymsHandler extends NgordnetQueryHandler {
 
     public HyponymsHandler() {
         super();
-        wordNet = new WordNet("data/wordnet/synsets16.txt", "data/wordnet/hyponyms16.txt");
+        wordNet = new WordNet("data/wordnet/synsets.txt", "data/wordnet/hyponyms.txt");
     }
 
     @Override
