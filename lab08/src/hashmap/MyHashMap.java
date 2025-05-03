@@ -13,6 +13,11 @@ import java.util.Set;
  */
 public class MyHashMap<K, V> implements Map61B<K, V> {
 
+    private final static int DEFAULT_INITIAL_CAPACITY = 16;
+    private final static double DEFAULT_LOAD_FACTOR = 0.75;
+    private int capacity;
+    private final double loadFactor;
+    private int nodeCount = 0;
     /**
      * Protected helper class to store key/value pairs
      * The protected qualifier allows subclass access
@@ -31,18 +36,29 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     // You should probably define some more!
 
     /** Constructors */
-    public MyHashMap() { }
+    public MyHashMap() {
+        this(DEFAULT_INITIAL_CAPACITY, DEFAULT_LOAD_FACTOR);
+    }
 
-    public MyHashMap(int initialCapacity) { }
+    public MyHashMap(int capacity) {
+        this(capacity, DEFAULT_LOAD_FACTOR);
+    }
 
     /**
      * MyHashMap constructor that creates a backing array of initialCapacity.
      * The load factor (# items / # buckets) should always be <= loadFactor
      *
-     * @param initialCapacity initial size of backing array
+     * @param capacity initial size of backing array
      * @param loadFactor maximum load factor
      */
-    public MyHashMap(int initialCapacity, double loadFactor) { }
+    public MyHashMap(int capacity, double loadFactor) {
+        this.capacity = capacity;
+        this.loadFactor = loadFactor;
+        buckets = new Collection[this.capacity];
+        for (int i = 0; i < capacity; i++) {
+            buckets[i] = createBucket();
+        }
+    }
 
     /**
      * Returns a data structure to be a hash table bucket
@@ -84,6 +100,42 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     @Override
     public void put(K key, V value) {
 
+        int hashCode = key.hashCode();
+        int index = Math.floorMod(hashCode, capacity);
+        Collection<Node> bucket = buckets[index];
+        Node exist = bucket.stream()
+                .filter(node -> node.key.equals(key))
+                .findFirst()
+                .orElse(null);
+        if (exist != null) {
+            exist.value = value;
+        }
+        else {
+            Node newNode = new Node(key, value);
+            bucket.add(newNode);
+            nodeCount++;
+            double currentFactor = ((double) nodeCount) / capacity;
+            if (currentFactor > loadFactor) {
+                resize();
+            }
+        }
+    }
+
+    private void resize() {
+        int newCapacity = capacity * 2;
+        Collection<Node>[] newBuckets = new Collection[newCapacity];
+        for (int i = 0; i < newCapacity; i++) {
+            newBuckets[i] = createBucket();
+        }
+        for (Collection<Node> bucket : buckets) {
+            for (Node node : bucket) {
+                int hashCode = node.key.hashCode();
+                int index = Math.floorMod(hashCode, newCapacity);
+                newBuckets[index].add(node);
+            }
+        }
+        buckets = newBuckets;
+        capacity = newCapacity;
     }
 
     /**
@@ -94,7 +146,14 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      */
     @Override
     public V get(K key) {
-        return null;
+        int hashCode = key.hashCode();
+        int index = Math.floorMod(hashCode, capacity);
+        Collection<Node> bucket = buckets[index];
+        return bucket.stream()
+                .filter(node -> node.key.equals(key))
+                .findFirst()
+                .map(node -> node.value)
+                .orElse(null);
     }
 
     /**
@@ -104,7 +163,13 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      */
     @Override
     public boolean containsKey(K key) {
-        return false;
+        int hashCode = key.hashCode();
+        int index = Math.floorMod(hashCode, capacity);
+        Collection<Node> bucket = buckets[index];
+        return bucket.stream()
+                .filter(node -> node.key.equals(key))
+                .findFirst()
+                .orElse(null) != null;
     }
 
     /**
@@ -112,7 +177,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      */
     @Override
     public int size() {
-        return 0;
+        return nodeCount;
     }
 
     /**
@@ -120,7 +185,12 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      */
     @Override
     public void clear() {
-
+        nodeCount = 0;
+        capacity = DEFAULT_INITIAL_CAPACITY;
+        buckets = new Collection[capacity];
+        for (int i = 0; i < capacity; i++) {
+            buckets[i] = createBucket();
+        }
     }
 
     /**
@@ -129,7 +199,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      */
     @Override
     public Set<K> keySet() {
-        return Set.of();
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     /**
@@ -142,7 +212,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      */
     @Override
     public V remove(K key) {
-        return null;
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     /**
@@ -152,6 +222,6 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      */
     @Override
     public Iterator<K> iterator() {
-        return null;
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 }
